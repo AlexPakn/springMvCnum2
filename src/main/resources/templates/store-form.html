@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Форма Магазина</title>
+</head>
+<body>
+<h1 th:text="${store.id == null ? 'Добавить новый магазин' : 'Редактировать магазин'}"></h1>
+
+<!-- Форма для добавления нового контакта -->
+<form th:action="@{/stores}" method="post" enctype="multipart/form-data" th:if="${store.id == null}">
+  <input type="hidden" name="_method" value="post"/>
+  <label for="name">Название:</label>
+  <input type="text" id="name" name="name" th:value="${store.name}" required><br>
+
+  <label for="logoFile">Логотип:</label>
+  <input type="file" id="logoFile" name="logoFile"><br>
+
+  <label for="address">Адрес:</label>
+  <input type="text" id="address" name="address" th:value="${store.address}" required><br>
+
+  <label for="phone">Телефон:</label>
+  <input type="text" id="phone" name="phone" th:value="${store.phone}" required><br>
+
+  <label for="email">Email:</label>
+  <input type="email" id="email" name="email" th:value="${store.email}" required><br>
+
+  <label for="website">Сайт:</label>
+  <input type="text" id="website" name="website" th:value="${store.website}" required><br>
+
+  <label for="category">Категория:</label>
+  <input type="text" id="category" name="category" th:value="${store.category}" required><br>
+
+  <label for="description">Описание:</label>
+  <textarea id="description" name="description" required th:text="${store.description}"></textarea><br>
+
+  <button type="submit">Сохранить</button>
+</form>
+
+
+<!-- Форма для редактирования контакта -->
+<form th:action="@{/stores/{id}(id=${store.id})}" method="post" enctype="multipart/form-data" th:unless="${store.id == null}">
+  <input type="hidden" name="_method" value="post"/>
+  <label for="name">Название:</label>
+  <input type="text" id="name" name="name" th:value="${store.name}" required><br>
+
+  <label for="logoFile">Логотип:</label>
+  <input type="file" id="logoFile" name="logoFile"><br>
+
+  <label for="address">Адрес:</label>
+  <input type="text" id="address" name="address" th:value="${store.address}" required><br>
+
+  <label for="phone">Телефон:</label>
+  <input type="text" id="phone" name="phone" th:value="${store.phone}" required><br>
+
+  <label for="email">Email:</label>
+  <input type="email" id="email" name="email" th:value="${store.email}" required><br>
+
+  <label for="website">Сайт:</label>
+  <input type="text" id="website" name="website" th:value="${store.website}" required><br>
+
+  <label for="category">Категория:</label>
+  <input type="text" id="category" name="category" th:value="${store.category}" required><br>
+
+  <label for="description">Описание:</label>
+  <textarea id="description" name="description" required th:text="${store.description}"></textarea><br>
+
+  <button type="submit">Сохранить</button>
+</form>
+
+<a href="/stores">Назад</a>
+</body>
+</html>

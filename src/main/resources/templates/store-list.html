@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Поисковик Магазинов</title>
+</head>
+<body>
+<h1>Список Магазинов</h1>
+
+<form method="get">
+  <input type="text" name="search" th:value="${search}" placeholder="Поиск по имени">
+  <button type="submit">Найти</button>
+</form>
+
+<a href="/stores/new">Добавить новый магазин</a>
+
+<table th:border="1">
+  <thead>
+  <tr>
+    <th>Логотип</th>
+    <th>Название</th>
+    <th>Адрес</th>
+    <th>Телефон</th>
+    <th>Действия</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="store : ${stores}">
+    <td><img th:src="@{${store.logo}}" alt="Логотип магазина" width="50"></td>
+    <td th:text="${store.name}"></td>
+    <td th:text="${store.address}"></td>
+    <td th:text="${store.phone}"></td>
+    <td>
+      <a th:href="@{/stores/{id}(id=${store.id})}">Подробнее</a> |
+      <a th:href="@{/stores/{id}/edit(id=${store.id})}">Редактировать</a> |
+      <a th:href="@{/stores/{id}/delete(id=${store.id})}">Удалить</a>
+    </td>
+  </tr>
+  </tbody>
+</table>
+</body>
+</html>

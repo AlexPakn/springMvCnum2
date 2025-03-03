@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Детали Магазина</title>
+</head>
+<body>
+<h1 th:text="${store.name}"></h1>
+<p><strong>Логотип:</strong></p>
+<img th:src="@{/{logo}(logo=${store.logo})}" alt="Логотип магазина" width="200">
+<p><strong>Телефон:</strong> <span th:text="${store.phone}"></span></p>
+<p><strong>Email:</strong> <span th:text="${store.email}"></span></p>
+<p><strong>Сайт:</strong> <a th:href="${store.website}" th:text="${store.website}"></a></p>
+<p><strong>Аддрес:</strong> <span th:text="${store.address}"></span></p>
+<p><strong>Категория:</strong> <span th:text="${store.category}"></span></p>
+<p><strong>Описание:</strong> <span th:text="${store.description}"></span></p>
+<a href="/stores">Назад</a>
+</body>
+</html>
