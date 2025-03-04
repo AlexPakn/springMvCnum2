@@ -81,6 +81,7 @@ public class StoreController {
     }
     return "redirect:/stores";
   }
+
   @PostMapping("/{id}")
   public String updateStore(@PathVariable int id, @ModelAttribute Store updatedStore,
       @RequestParam("logoFile") MultipartFile file) {
