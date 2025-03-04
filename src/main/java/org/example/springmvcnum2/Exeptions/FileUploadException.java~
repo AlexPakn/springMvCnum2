@@ -1,0 +1,4 @@
+package org.example.springmvcnum2.Exeptions;
+
+public class FileUploadException {
+}
