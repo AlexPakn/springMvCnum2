@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import org.example.springmvcnum2.Exeptions.FileUploadException;
@@ -27,23 +28,27 @@ public class StoreController {
 
   @GetMapping
   public String listStores(@RequestParam(required = false) String search, Model model) {
-    List<Store> stores;
-
     if (search != null && !search.isEmpty()) {
-      stores = storeService.getAllStores().stream()
-          .filter(store -> store.getName().toLowerCase().contains(search.toLowerCase()))
-          .collect(Collectors.toList());
+      model.addAttribute("stores", storeService.searchStoresByName(search));
     } else {
-      stores = storeService.getAllStores();  // Возвращает все магазины
+      model.addAttribute("stores", storeService.getAllStores());
     }
-
-    model.addAttribute("stores", stores);
-    model.addAttribute("search", search);  // Чтобы значение поля search оставалось в форме
+    model.addAttribute("search", search);
     return "store-list";
   }
 
+  @GetMapping("/{id}")
+  public String storeDetails(@PathVariable int id, Model model) {
+    Optional<Store> store = storeService.getStoreById(id);
+    if (store.isPresent()) {
+      model.addAttribute("store", store.get());
+      return "store-detail";
+    }
+    return "redirect:/stores";
+  }
+
   @GetMapping("/new")
-  public String showAddForm(Model model) {
+  public String newStoreForm(Model model) {
     model.addAttribute("store", new Store());
     return "store-form";
   }
@@ -53,51 +58,58 @@ public class StoreController {
     if (!file.isEmpty()) {
       try {
         String fileName = file.getOriginalFilename();
-        Path uploadPath = Paths.get("uploads/");
+        Path uploadPath = Paths.get("src/main/resources/static/logoFiles/");
         Files.createDirectories(uploadPath);
         file.transferTo(uploadPath.resolve(fileName));
-        store.setLogo("/uploads/" + fileName);
+        store.setLogo("logoFiles/" + fileName);  // Устанавливаем путь к файлу
       } catch (IOException e) {
-        throw new FileUploadException("Не удалось сохранить файл " + file.getOriginalFilename());
+        throw new FileUploadException("Ошибка при сохранении файла: " + file.getOriginalFilename());
       }
     }
-    storeService.addStore(store);
+
+    storeService.saveStore(store, store.getLogo());
     return "redirect:/stores";
   }
 
-
-  @GetMapping("/{id}")
-  public String viewStore(@PathVariable int id, Model model) {
-    Store store = storeService.getStoreById(id)
-        .orElseThrow(() -> new StoreNotFoundException("Магазин с ID " + id + " не найден"));
-    model.addAttribute("store", store);
-    return "store-detail";
-  }
 
   @GetMapping("/{id}/edit")
-  public String showEditForm(@PathVariable int id, Model model) {
-    storeService.getStoreById(id).ifPresent(store -> model.addAttribute("store", store));
-    return "store-form";
-  }
-
-  @PostMapping("/{id}")
-  public String updateStore(@PathVariable int id, @ModelAttribute Store store, @RequestParam("logoFile") MultipartFile file) {
-    if (!file.isEmpty()) {
-      String fileName = file.getOriginalFilename();
-      Path uploadPath = Paths.get("src/main/resources/static/logoFiles/");
-
-      try {
-        Files.createDirectories(uploadPath);
-        file.transferTo(uploadPath.resolve(fileName));
-        store.setLogo("/logoFiles/" + fileName);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+  public String editStore(@PathVariable int id, Model model) {
+    Optional<Store> store = storeService.getStoreById(id);
+    if (store.isPresent()) {
+      model.addAttribute("store", store.get());
+      return "store-form";
     }
-    storeService.updateStore(id, store);
     return "redirect:/stores";
   }
+  @PostMapping("/{id}")
+  public String updateStore(@PathVariable int id, @ModelAttribute Store updatedStore,
+      @RequestParam("logoFile") MultipartFile file) {
+    Store store = storeService.getStoreById(id)
+        .orElseThrow(() -> new StoreNotFoundException("Магазин с ID " + id + " не найден"));
 
+    store.setName(updatedStore.getName());
+    store.setAddress(updatedStore.getAddress());
+    store.setPhone(updatedStore.getPhone());
+    store.setEmail(updatedStore.getEmail());
+    store.setWebsite(updatedStore.getWebsite());
+    store.setCategory(updatedStore.getCategory());
+    store.setDescription(updatedStore.getDescription());
+
+    if (!file.isEmpty()) {
+      try {
+        String fileName = file.getOriginalFilename();
+        Path uploadPath = Paths.get("src/main/resources/static/logoFiles/");
+        Files.createDirectories(uploadPath);
+        file.transferTo(uploadPath.resolve(fileName));
+        store.setLogo("logoFiles/" + fileName);
+      } catch (IOException e) {
+        throw new FileUploadException("Ошибка при сохранении файла: " + file.getOriginalFilename());
+      }
+    }
+
+    storeService.saveStore(store, store.getLogo());
+    return "redirect:/stores";
+  }
 
   @GetMapping("/{id}/delete")
   public String deleteStore(@PathVariable int id) {
@@ -105,3 +117,4 @@ public class StoreController {
     return "redirect:/stores";
   }
 }
+

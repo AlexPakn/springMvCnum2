@@ -4,30 +4,12 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
-/* wtf
-@AllArgsConstructor
-@NoArgsConstructor
-@Setter
-@Getter
+@Table("stores")
 public class Store {
-  private Integer id;
-  private String name;
-  private String address;
-  private String phone;
-  private String email;
-  private String website;
-  private String category;
-  private String description;
-  private String logo;
-}
-*/
-
-public class Store {
+  @Id
   private Integer id;
 
   @NotBlank(message = "Название магазина обязательно")
